@@ -17,7 +17,7 @@ list_reac={0 : "e^- Ar B C", 1 : "B C Ar K L", 2 : "e^- B C"}
 # PARAM: liste des types de réactions: "binaire" indique qu'il y a 2 réactifs, "unaire" qu'il y en a qu'un seul
 list_type={0:"binaire", 1:"binaire", 2:"binaire"}
 # les constantes des réactions
-sig_r_0 = -1.0;
+sig_r_0 = 1.0;
 sig_r_1 = 2.0;
 sig_r_2 = 0.5;
 # PARAM: la liste des constantes de réactions
