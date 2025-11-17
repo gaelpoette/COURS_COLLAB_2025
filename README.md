@@ -1,14 +1,18 @@
 # COURS_COLLAB_REAC - Résolution de l'équation cinétique chimique principale avec un schéma de Monte Carlo.
 
- - auteurs : GAEL POETTE et la promotion 2025-2025 développement de codes collaboratif
+ - auteurs : GAEL POETTE et la promotion 2025-2026 développement de codes collaboratif
 
-
-Un petit code de cinétique chimique résolu par méthode MC volontairement imparfait mais que vous allez améliorer
-
+Fichier éxécutable : ode_mc.py
 
 ## Général
 
 Dans ce répertoire, on retrouve un code de cinétique chimique résolu par méthode MC, la documentation associée et les paramètres d'un cas test.
+
+Le code permet de résoudre pour 3 types de réacitons : 
+ - Les réactions unaires.
+ - Les réactions binaires.
+ - Les réactions ternaires.
+
 # Documentation
 
 Un jupyternotebook ode_reac.ipynb sert de documentation, il contient :
@@ -17,10 +21,22 @@ Un jupyternotebook ode_reac.ipynb sert de documentation, il contient :
  - Les données d'entrées.
  - Les développements réalisés
 
-# Code
-### Exécutable
+# fich_cas_test
 
-### Cas Tes
+Dans ce dossier on retrouve l'ensemble des tests qui permettent d'attester du bon foncitonnement du code
+## premier_test
+### param.py
+Fichier python contenant le jeu de paramètre du test 1
+###rez_ref.txt
+Fichier contenant les résultats obtenus.
+
+### Résultats attendus 
+ATTENTION : pour obtenir le graphique attendu il faut absolument vérifier que dans ode_mc.py ligne 9 il y a "random.seed(42)"
+
+
+
+##BNR.py
+
 
 
 TODO (idée pour améliorer le code)
