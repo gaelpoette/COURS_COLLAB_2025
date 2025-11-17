@@ -1,6 +1,11 @@
 # COURS_COLLAB_REAC
 Un petit code de cinétique chimique résolu par méthode MC volontairement imparfait mais que vous allez améliorer
 
+# TESTS
+pour tester, lancer la commande
+python BNR.py 
+dans fich_cas_test
+
 TODO (idée pour améliorer le code)
 - faire un readme digne de ce nom                                                              => Jules 
 - Conditions initiales en dur. Pas fou ça                                                      => Younoussa
