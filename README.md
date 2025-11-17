@@ -1,11 +1,14 @@
-# COURS_COLLAB_REAC
+# COURS_COLLAB_REAC - Résolution de l'équation cinétique chimique principale avec un schéma de Monte Carlo.
+
+ - auteurs : GAEL POETTE et la promotion 2025-2025 développement de codes collaboratif
+
+
 Un petit code de cinétique chimique résolu par méthode MC volontairement imparfait mais que vous allez améliorer
 
 
 ## Général
 
-Dans ce répertoire, on retrouve un code de cinétique chimique résolu par méthode MC. 
-
+Dans ce répertoire, on retrouve un code de cinétique chimique résolu par méthode MC, la documentation associée et les paramètres d'un cas test.
 # Documentation
 
 Un jupyternotebook ode_reac.ipynb sert de documentation, il contient :
