@@ -32,13 +32,13 @@ eta={}
 for c in compos:
     eta[c]=0.
     if c=="Ar" or c=="e^-":
-      eta[c] = 1. * vol
+      eta[c] = 1. * volume
 	
 print("conditions initiales des espèces")
 print(eta)
 
-h={}
-nu={}
+reactif_list={}
+coeff_stoch={}
 for i in range(len(list_reac)):
     print("\n num de reaction = "+str(i)+"")
     reac = list_reac[i]
@@ -49,18 +49,18 @@ for i in range(len(list_reac)):
 
     isnum=0
     if list_type[i] == "binaire":
-          h[i] = [compos_reac[0], compos_reac[1]]
+          reactif_list[i] = [compos_reac[0], compos_reac[1]]
     elif list_type[i] == "unaire":
-          h[i] = [compos_reac[0]]
+          reactif_list[i] = [compos_reac[0]]
     else:
           print("type de reaction non reconnue")
           exit(2)
 
     #recuperation des vecteurs de coefficients stoechiométriques pour chaque reactions
-    nu[i]={}
+    coeff_stoch[i]={}
     #print compos
     for cg in compos:
-        nu[i][cg] = 0.
+        coeff_stoch[i][cg] = 0.
         num = 0
         for c in compos_reac:
           isnum=0
@@ -69,16 +69,16 @@ for i in range(len(list_reac)):
           if list_type[i] == "unaire":
               isnum = (num == 0)
           if c == cg and (isnum): #réactions à 2 réactifs
-              nu[i][cg] += -1.
+              coeff_stoch[i][cg] += -1.
           if c == cg and (not isnum): #réactions à 2 réactifs
-              nu[i][cg] +=  1.
+              coeff_stoch[i][cg] +=  1.
           else:
-              nu[i][cg] +=  0.
+              coeff_stoch[i][cg] +=  0.
           num+=1
-print("\nles listes de réactifs (h) pour chaque reaction")
-print(h)
-print("les coefficients stoechiométriques (nu) pour chaque reaction")
-print(nu)
+print("\nles listes de réactifs (reactif_list) pour chaque reaction")
+print(reactif_list)
+print("les coefficients stoechiométriques (coeff_stoch) pour chaque reaction")
+print(coeff_stoch)
 # population de particules représentant la condition initiale
 PMC=[]
 for nmc in range(Nmc):
@@ -98,7 +98,7 @@ it=0
 tps = 0.
 cmd+="\n"+str(tps)+" "
 for c in compos:
- cmd+=str(eta[c]/vol)+" "
+ cmd+=str(eta[c]/volume)+" "
 
 print("\n début du calcul")
 
@@ -120,13 +120,13 @@ while tps < temps_final:
           sig = 0.
           for i in range(len(list_reac)):
               prod = 1.
-              for H in h[i]:
+              for H in reactif_list[i]:
                   prod *= pmc["densities"][H]
 
               exposant = 1
               if list_type[i] == "unaire":
                   exposant = 0
-              volr = vol **exposant
+              volr = volume **exposant
               sig+= list_sigr[i] / volr * prod
 
           #tirage du temps de la prochaine reaction
@@ -153,13 +153,13 @@ while tps < temps_final:
               proba = 0.
               for i in range(len(list_reac)-1):
                   prod = 1.
-                  for H in h[i]:
+                  for H in reactif_list[i]:
                       prod *= pmc["densities"][H]
 
                   exposant = 1
                   if list_type[i] == "unaire":
                       exposant = 0
-                  volr = vol **exposant
+                  volr = volume **exposant
                   proba+= list_sigr[i] / volr * prod
 
                   if U * sig < proba:
@@ -167,12 +167,12 @@ while tps < temps_final:
                       break
 
               for c in compos:
-                  pmc["densities"][c]+=nu[reac][c]
+                  pmc["densities"][c]+=coeff_stoch[reac][c]
 
   tps+=dt
   cmdt=""+str(tps)+" "
   for c in compos:
-   cmdt+=str(eta[c] / vol)+" "
+   cmdt+=str(eta[c] / volume)+" "
   cmd+="\n"+cmdt
 
 output = open("rez.txt",'w')
