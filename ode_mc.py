@@ -16,181 +16,260 @@ if (not(len(list_reac)==len(list_sigr))):
   print("ATTENTION! LES LISTES DOIVENT AVOIR LA MEME TAILLE!")
   exit(1)
 
-# lecture de la liste des compositions des réactions
-compos=[]
-for i in range(len(list_reac)): 
-  compos_reac=(list_reac[i].split(' '))
-  for j in range(len(compos_reac)):
-     if not(compos_reac[j] in compos):
-       compos.append(compos_reac[j])
+# ============================================================
+# 1. Préparation des espèces et conditions initiales
+# ============================================================
 
-print("liste des especes")
-print(compos)
+def get_species(list_reac):
+    compos=[]
+    for i in range(len(list_reac)): 
+        compos_reac=(list_reac[i].split(' '))
+        for j in range(len(compos_reac)):
+            if not(compos_reac[j] in compos):
+                compos.append(compos_reac[j])
+    return compos
 
-#"conditions initiales en eta codée en dur pour l'instant
-eta={}
-for c in compos:
-    eta[c]=0.
-    if c=="Ar" or c=="e^-":
-      eta[c] = 1. * vol
-	
-print("conditions initiales des espèces")
-print(eta)
 
-h={}
-nu={}
-for i in range(len(list_reac)):
-    print("\n num de reaction = "+str(i)+"")
-    reac = list_reac[i]
-    compos_reac = (reac.split(' '))
-    print(compos_reac)
-    # recuperation du vecteur des reactifs
-    print("type de reaction: "+list_type[i]+"")
-
-    isnum=0
-    if list_type[i] == "binaire":
-          h[i] = [compos_reac[0], compos_reac[1]]
-    elif list_type[i] == "unaire":
-          h[i] = [compos_reac[0]]
-    else:
-          print("type de reaction non reconnue")
-          exit(2)
-
-    #recuperation des vecteurs de coefficients stoechiométriques pour chaque reactions
-    nu[i]={}
-    #print compos
-    for cg in compos:
-        nu[i][cg] = 0.
-        num = 0
-        for c in compos_reac:
-          isnum=0
-          if list_type[i] == "binaire":
-              isnum = (num == 0 or num == 1)
-          if list_type[i] == "unaire":
-              isnum = (num == 0)
-          if c == cg and (isnum): #réactions à 2 réactifs
-              nu[i][cg] += -1.
-          if c == cg and (not isnum): #réactions à 2 réactifs
-              nu[i][cg] +=  1.
-          else:
-              nu[i][cg] +=  0.
-          num+=1
-print("\nles listes de réactifs (h) pour chaque reaction")
-print(h)
-print("les coefficients stoechiométriques (nu) pour chaque reaction")
-print(nu)
-# population de particules représentant la condition initiale
-PMC=[]
-for nmc in range(Nmc):
-    w=1. / Nmc
-    eta_nmc={}
+def initial_eta(compos, vol):
+    eta = {}
     for c in compos:
-        eta_nmc[c] = eta[c]
-    pmc = {"weight" : w, "densities" : eta_nmc}
-    PMC.append(pmc)
+        eta[c] = vol if c in ["Ar", "e^-"] else 0.
+    return eta
 
-#entete du fichier
-cmd="\n"+"#temps"+" "
-for c in compos:
- cmd+=str(c)+" "
+# ============================================================
+# 2. Construction des vecteurs h et nu
+# ============================================================
 
-it=0
-tps = 0.
-cmd+="\n"+str(tps)+" "
-for c in compos:
- cmd+=str(eta[c]/vol)+" "
+def build_reactants_and_stoechiometry(list_reac, list_type, compos):
+    h = {}
+    nu = {}
 
-print("\n début du calcul")
+    for i in range(len(list_reac)):
+        reac = list_reac[i].split(" ")
 
-while tps < temps_final:
+        # définition des réactifs selon le type
+        if list_type[i] == "binaire":
+            h[i] = [reac[0], reac[1]]
+        elif list_type[i] == "unaire":
+            h[i] = [reac[0]]
+        else:
+            raise ValueError("Type de réaction inconnu")
 
-  dt = temps[it+1]-temps[it]
+        # stoechiométrie
+        nu[i] = {}
+        for cg in compos:
+            nu[i][cg] = 0.
+            num = 0
+            for c in reac:
+                isnum = (num < len(h[i]))  # indices des réactifs
+                if c == cg:
+                    nu[i][cg] += -1. if isnum else 1.
+                num += 1
 
-  # initialisation du tableau de tallies
-  for c in compos:
-      eta[c] = 0.
+    return h, nu
 
-  for pmc in PMC:
+# ============================================================
+# 3. Initialisation de la population PMC
+# ============================================================
+
+def init_PMC(Nmc, compos, eta):
+    PMC = []
+    for _ in range(Nmc):
+        w = 1.0 / Nmc
+        PMC.append({
+            "weight": w,
+            "densities": {c: eta[c] for c in compos}
+        })
+    return PMC
+
+
+# ============================================================
+# 4. Simulation Monte Carlo
+# ============================================================
+
+def compute_total_sigma(pmc, h, list_sigr, list_type, vol):
+    sig = 0.
+    for i in range(len(list_sigr)):
+        prod = 1.
+        for H in h[i]:
+            prod *= pmc["densities"][H]
+
+        exposant = 0 if list_type[i] == "unaire" else 1
+        volr = vol ** exposant
+
+        sig += list_sigr[i] * prod / volr
+    return sig
+
+def choose_reaction(pmc, sig, h, list_sigr, list_type, vol):
+    U = random.random()
+    proba = 0.
+
+    for i in range(len(list_sigr) - 1):
+        prod = 1.
+        for H in h[i]:
+            prod *= pmc["densities"][H]
+
+        exposant = 0 if list_type[i] == "unaire" else 1
+        volr = vol ** exposant
+        proba += list_sigr[i] * prod / volr
+
+        if U * sig < proba:
+            return i
+
+    return len(list_sigr) - 1
+
+
+def simulate_step(PMC, eta, compos, h, nu, list_reac, list_type, list_sigr, vol, dt):
+
+    # initialisation du tableau de tallies
+    for c in compos:
+        eta[c] = 0.
+
+    for pmc in PMC:
+
+        tps_cur = 0.
+
+        while tps_cur < dt:
+
+            sig = 0.
+            for i in range(len(list_reac)):
+                prod = 1.
+                for H in h[i]:
+                    prod *= pmc["densities"][H]
+
+                exposant = 1
+                if list_type[i] == "unaire":
+                    exposant = 0
+                volr = vol ** exposant
+                sig += list_sigr[i] / volr * prod
+
+            # tirage du temps de la prochaine reaction
+            U = random.random()
+            tau = 1.e32
+            if sig > 0.:
+                tau = -log(U) / sig
+
+            # temps courant updaté
+            tps_cur += tau
+
+            # détermination de l'événement que la pmc va subir
+            if tps_cur > dt:  
+                # census
+                tps_cur = dt
+                for c in compos:
+                    eta[c] += pmc["densities"][c] * pmc["weight"]
+
+            else:
+                # réaction
+                U = random.random()
+
+                reac = len(list_reac) - 1
+                proba = 0.
+
+                for i in range(len(list_reac) - 1):
+                    prod = 1.
+                    for H in h[i]:
+                        prod *= pmc["densities"][H]
+
+                    exposant = 1
+                    if list_type[i] == "unaire":
+                        exposant = 0
+                    volr = vol ** exposant
+                    proba += list_sigr[i] / volr * prod
+
+                    if U * sig < proba:
+                        reac = i
+                        break
+
+                for c in compos:
+                    pmc["densities"][c] += nu[reac][c]
     
-      tps_cur = 0.
 
-      while tps_cur < dt:
+def simulate(PMC, eta, compos, temps, temps_final, h, nu, list_sigr, list_type, vol):
 
-          # section efficace totale
-          sig = 0.
-          for i in range(len(list_reac)):
-              prod = 1.
-              for H in h[i]:
-                  prod *= pmc["densities"][H]
+    tps = 0.
+    it = 0
 
-              exposant = 1
-              if list_type[i] == "unaire":
-                  exposant = 0
-              volr = vol **exposant
-              sig+= list_sigr[i] / volr * prod
+    cmd = "\n#temps " + " ".join(compos) + "\n"
+    cmd += f"{tps} " + " ".join(str(eta[c] / vol) for c in compos)
 
-          #tirage du temps de la prochaine reaction
-          U = random.random()
-          tau = 1.e32
-          if sig > 0.:
-              tau = - log(U) / sig
+    while tps < temps_final:
 
-          # temps courant updaté
-          tps_cur += tau
+        if it + 1 >= len(temps):
+            print("Erreur : tableau temps trop court.")
+            break
 
-          # détermination de l'évenement que la pmc va subir
-          if tps_cur > dt:
-              #census
-              tps_cur = dt
-              for c in compos:
-                  eta[c] += pmc["densities"][c] * pmc["weight"]
+        dt = temps[it + 1] - temps[it]
 
-          else:
-              #reaction
-              U = random.random()
+        # Appel au simulation en une step de temps 
+        simulate_step(PMC, eta, compos, h, nu, list_reac, list_type, list_sigr, vol, dt)
 
-              reac = len(list_reac)-1
-              proba = 0.
-              for i in range(len(list_reac)-1):
-                  prod = 1.
-                  for H in h[i]:
-                      prod *= pmc["densities"][H]
+        # mise à jour temps
+        tps += dt
 
-                  exposant = 1
-                  if list_type[i] == "unaire":
-                      exposant = 0
-                  volr = vol **exposant
-                  proba+= list_sigr[i] / volr * prod
+        # stockage des valeurs
+        cmd += "\n" + str(tps) + " " + " ".join(str(eta[c] / vol) for c in compos)
 
-                  if U * sig < proba:
-                      reac = i
-                      break
+        it += 1
 
-              for c in compos:
-                  pmc["densities"][c]+=nu[reac][c]
+    return cmd
 
-  tps+=dt
-  cmdt=""+str(tps)+" "
-  for c in compos:
-   cmdt+=str(eta[c] / vol)+" "
-  cmd+="\n"+cmdt
+# ============================================================
+# 5. Export des résultats
+# ============================================================
 
-output = open("rez.txt",'w')
-output.write(cmd)
-output.close()
+def write_results(cmd):
+    with open("rez.txt", "w") as f:
+        f.write(cmd)
 
-cmd_gnu="set sty da l;set grid; set xl 'time'; set yl 'densities of the species'; plot "
-i=3
-cmd_gnu+="'rez.txt' lt 1 w lp  t '"+str(compos[0])+"'"
-for c in compos:
-   if not(c==compos[0]):
-     cmd_gnu+=",'' u 1:"+str(i)+" lt "+str(i)+" w lp t '"+str(compos[i-2])+"'"
-     i+=1
 
-cmd_gnu+=";pause -1"
-output = open("gnu.plot",'w')
-output.write(cmd_gnu)
-output.close()
+def write_gnuplot(compos):
+    cmd_gnu = "set sty da l; set grid; set xl 'time'; set yl 'densities'; plot "
+    cmd_gnu += "'rez.txt' lt 1 w lp t '" + compos[0] + "'"
 
-os.system("gnuplot gnu.plot")
+    for i in range(1, len(compos)):
+        cmd_gnu += f", '' u 1:{i+2} lt {i+1} w lp t '{compos[i]}'"
+
+    cmd_gnu += "; pause -1"
+
+    with open("gnu.plot", "w") as f:
+        f.write(cmd_gnu)
+        
+
+
+# ============================================================
+# 6. MAIN
+# ============================================================
+
+def main():
+    print("liste des reactions")
+    print(list_reac)
+
+    if len(list_reac) != len(list_sigr):
+        print("ATTENTION! tailles incohérentes !")
+        return
+
+    compos = get_species(list_reac)
+    print("liste des espèces")
+    print(compos)
+
+    eta = initial_eta(compos, vol)
+    print("conditions initiales")
+    print(eta)
+
+    h, nu = build_reactants_and_stoechiometry(list_reac, list_type, compos)
+
+    PMC = init_PMC(Nmc, compos, eta)
+
+    print("\nDébut du calcul...")
+    cmd = simulate(PMC, eta, compos, temps, temps_final, h, nu, list_sigr, list_type, vol)
+
+    write_results(cmd)
+    write_gnuplot(compos)
+
+    os.system("gnuplot gnu.plot")
+
+
+if __name__ == "__main__":
+    main()
 
