@@ -12,7 +12,7 @@ from param import *
 # Vérification des constantes de réactions
 for i, s in list_sigr.items():
     if s < 0:
-        print(f"ERREUR : constante de réaction négative pour la réaction {i} : {s}")
+        print(f"ERREUR : constant de réaction négative pour la réaction {i} : {s}")
         exit(10)
 
 
