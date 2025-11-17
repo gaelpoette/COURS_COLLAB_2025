@@ -6,6 +6,8 @@ from string import *
 import os
 import random
 
+random.seed(42)
+
 
 # importation des paramètres
 from param import *
