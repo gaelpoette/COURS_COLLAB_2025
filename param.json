@@ -1,0 +1,31 @@
+{
+
+    "1" : "Nb de particules MC",
+    "Nmc" : 10,
+
+    "2" : "Volume",
+    "Vol" : 10.0,
+
+    "3" : "Construction de la liste des temps d'intérêt",
+    "temps_final" : 30,
+    "dt" : 1,
+
+    "t" : 0.0,
+
+    "4" : "liste des réactions: codage pour dire e^-+Ar->B+C et B+C->Ar+K+L et e^-+B->C",
+    "list_reac" : ["e^- Ar B C","B C Ar K L","e^- B C"],
+
+    "5" : "liste des types de réactions: binaire indique qu'il y a 2 réactifs, unaire qu'il y en a qu'un seul",
+    "list_type" : ["binaire", "binaire", "binaire"],
+
+    "6" : "constantes des réactions",
+    "sig_r_0" : 1.0,
+    "sig_r_1" : 2.0,
+    "sig_r_2" : 0.5
+
+
+
+
+
+
+}
