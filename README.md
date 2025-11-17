@@ -1,6 +1,25 @@
 # COURS_COLLAB_REAC
 Un petit code de cinétique chimique résolu par méthode MC volontairement imparfait mais que vous allez améliorer
 
+
+## Général
+
+Dans ce répertoire, on retrouve un code de cinétique chimique résolu par méthode MC. 
+
+# Documentation
+
+Un jupyternotebook ode_reac.ipynb sert de documentation, il contient :
+ - une simple description de la cinétique chimique. 
+ - L'ODE qui construite et résolue.
+ - Les données d'entrées.
+ - Les développements réalisés
+
+# Code
+### Exécutable
+
+### Cas Tes
+
+
 TODO (idée pour améliorer le code)
 - faire un readme digne de ce nom
 - Conditions initiales en dur. Pas fou ça
