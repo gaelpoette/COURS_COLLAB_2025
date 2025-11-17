@@ -4,7 +4,7 @@
     "Nmc" : 10,
 
     "2" : "Volume",
-    "Vol" : 10.0,
+    "vol" : 10.0,
 
     "3" : "Construction de la liste des temps d'intérêt",
     "temps_final" : 30,
