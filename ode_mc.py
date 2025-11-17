@@ -30,10 +30,9 @@ print(compos)
 #"conditions initiales en eta codée en dur pour l'instant
 eta={}
 for c in compos:
-    eta[c]=0.
-    if c=="Ar" or c=="e^-":
-      eta[c] = 1. * vol
-	
+    print("Choisir la concentration initiale de ",c, ':')
+    eta[c]=float(input( ))
+
 print("conditions initiales des espèces")
 print(eta)
 
