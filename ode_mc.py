@@ -10,13 +10,34 @@ random.seed(42)
 
 
 # importation des paramètres
-from param import *
-# Vérification des constantes de réactions
+import json
+
+with open("param.json", "r") as f:
+    params = json.load(f)
+
+Nmc = params["Nmc"]
+vol = params["vol"]
+temps_final = params["temps_final"]
+dt = params["dt"]
+t = params["t"]
+list_reac = params["list_reac"]
+list_type = params["list_type"]
+sig_r_0 = params["sig_r_0"]
+sig_r_1 = params["sig_r_1"]
+sig_r_2 = params["sig_r_2"]
+list_sigr = {0 : sig_r_0, 1 : sig_r_1, 2 : sig_r_2}
+temps=[]
+
 for i, s in list_sigr.items():
     if s < 0:
         print(f"ERREUR : constante de réaction négative pour la réaction {i} : {s}")
         exit(10)
 
+Nt = int(temps_final/dt)
+
+for it in range(Nt):
+    temps.append(t)
+    t+=dt
 
 print("liste des reactions")
 print(list_reac)
