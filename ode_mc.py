@@ -5,6 +5,8 @@ from math import *
 from string import *
 import os
 import random
+import matplotlib.pyplot as plt
+
 
 random.seed(42)
 
@@ -216,18 +218,72 @@ output = open("rez.txt",'w')
 output.write(cmd)
 output.close()
 
-cmd_gnu="set sty da l;set grid; set xl 'time'; set yl 'densities of the species'; plot "
-i=3
-cmd_gnu+="'rez.txt' lt 1 w lp  t '"+str(compos[0])+"'"
+#ancienne version 
+
+
+#----------------
+
+# cmd_gnu="set sty da l;set grid; set xl 'time'; set yl 'densities of the species'; plot "
+# i=3
+# cmd_gnu+="'rez.txt' lt 1 w lp  t '"+str(compos[0])+"'"
+# for c in compos:
+#    if not(c==compos[0]):
+#      cmd_gnu+=",'' u 1:"+str(i)+" lt "+str(i)+" w lp t '"+str(compos[i-2])+"'"
+#      i+=1
+
+# cmd_gnu+=";pause -1"
+# output = open("gnu.plot",'w')
+# output.write(cmd_gnu)
+# output.close()
+
+# os.system("gnuplot gnu.plot")
+
+
+#----------------------
+
+# nouvelle visualisation avec matplotlib
+
+#-------------------
+
+
+# On lit les résultats depuis rez.txt
+times = []
+densities = {c: [] for c in compos}
+
+with open("rez.txt", "r") as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue  # on saute les lignes de commentaires et les lignes vides
+
+        parts = line.split()
+        t = float(parts[0])
+        times.append(t)
+
+        # les densites sont ensuite dans le meme ordre que la liste 'compos'
+        for i, c in enumerate(compos):
+            densities[c].append(float(parts[i + 1]))
+
+# matplotlib
+plt.figure(figsize=(10, 6))
 for c in compos:
-   if not(c==compos[0]):
-     cmd_gnu+=",'' u 1:"+str(i)+" lt "+str(i)+" w lp t '"+str(compos[i-2])+"'"
-     i+=1
+    plt.plot(times, densities[c], label=c)
 
-cmd_gnu+=";pause -1"
-output = open("gnu.plot",'w')
-output.write(cmd_gnu)
-output.close()
+plt.xlabel("time")
+plt.ylabel("densities of the species")
+plt.title("evolution des densites (methode MC)")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
 
-os.system("gnuplot gnu.plot")
+# sauvegarder 
+plt.savefig("densites_matplotlib.png", dpi=150)
+print("figure sauvée dans 'densites_matplotlib.png'")
+
+plt.show() # affichage en local
+
+#----------------------------------
+
+
+
 
