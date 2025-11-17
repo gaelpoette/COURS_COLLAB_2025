@@ -7,4 +7,5 @@ for cas in list_cas_bnr:
     os.chdir(cas)
     os.system("cp param.py ../..")
     os.system("python3 ../../ode_mc.py")
+    os.system("diff rez.txt rez_ref.txt")
     os.chdir("..")
