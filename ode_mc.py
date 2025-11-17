@@ -6,6 +6,8 @@ from string import *
 import os
 import random
 
+random.seed(42)
+
 
 # importation des paramètres
 from param import *
@@ -23,13 +25,21 @@ if (not(len(list_reac)==len(list_sigr))):
   exit(1)
 
 # lecture de la liste des compositions des réactions
+list_type=[]
 compos=[]
 for i in range(len(list_reac)): 
   compos_reac=(list_reac[i].split(' '))
-  for j in range(len(compos_reac)):
-     if not(compos_reac[j] in compos):
+  print(compos_reac)
+  for j in range(len(compos_reac)-1):
+    if compos_reac[1] == "=":
+        del compos_reac[1] 
+        list_type.append("unaire")
+    if compos_reac[2] == "=":
+        del compos_reac[2] 
+        list_type.append("binaire")
+    if not(compos_reac[j] in compos):
        compos.append(compos_reac[j])
-
+       print(compos)
 print("liste des especes")
 print(compos)
 
