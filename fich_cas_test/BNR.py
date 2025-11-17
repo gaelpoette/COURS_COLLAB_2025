@@ -8,5 +8,6 @@ for cas in list_cas_bnr:
     os.system("cp param.py ../..")
     os.system("python3 ../../ode_mc.py")
     os.system("diff rez.txt rez_ref.txt > listing")
+    print("si la commande renvoie 0, pas de différences")
     os.system("wc -l listing")
     os.chdir("..")
