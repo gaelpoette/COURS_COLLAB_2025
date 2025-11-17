@@ -9,6 +9,12 @@ import random
 
 # importation des paramètres
 from param import *
+# Vérification des constantes de réactions
+for i, s in list_sigr.items():
+    if s < 0:
+        print(f"ERREUR : constante de réaction négative pour la réaction {i} : {s}")
+        exit(10)
+
 
 print("liste des reactions")
 print(list_reac)
