@@ -54,7 +54,7 @@ compos=[]
 for i in range(len(list_reac)): 
   compos_reac=(list_reac[i].split(' '))
   print(compos_reac)
-  for j in range(len(compos_reac)):
+  for j in range(len(compos_reac)-1):
     if compos_reac[1] == "=":
         del compos_reac[1] 
         list_type.append("unaire")
@@ -68,7 +68,7 @@ print("liste des especes")
 print(compos)
 
 #"conditions initiales en eta codée en dur pour l'instant
-if len(eta) != len(compos) :
+if  eta == {} :
     print("Erreur de taille dans la liste des concentrations")
     eta={}
     for c in compos:
