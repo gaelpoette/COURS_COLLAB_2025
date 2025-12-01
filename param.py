@@ -13,15 +13,16 @@ for it in range(Nt):
     t+=dt
 
 # PARAM: liste des réactions: codage pour dire e^-+Ar->B+C et B+C->Ar+K+L et e^-+B->C
-list_reac={0 : "e^- Ar B C", 1 : "B C Ar K L", 2 : "e^- B C"}
+list_reac={0 : "e^- Ar B C", 1 : "B C Ar K L", 2 : "e^- B C", 3 : "e^- A B K L"}
 # PARAM: liste des types de réactions: "binaire" indique qu'il y a 2 réactifs, "unaire" qu'il y en a qu'un seul, "ternaire" qu'il y en a 3
-list_type={0:"binaire", 1:"binaire", 2:"binaire"}
+list_type={0:"binaire", 1:"binaire", 2:"binaire", 3:"ternaire"}
 # les constantes des réactions
 sig_r_0 = 1.0;
 sig_r_1 = 2.0;
 sig_r_2 = 0.5;
+sig_r_3 = 1.0;
 # PARAM: la liste des constantes de réactions
-list_sigr={0 : sig_r_0, 1 : sig_r_1, 2 : sig_r_2}
+list_sigr={0 : sig_r_0, 1 : sig_r_1, 2 : sig_r_2, 3 : sig_r_3}
 
 # PARAM MANQUANT: pour l'instant, la liste des conditions initiales est en dur...
 # pour comprendre comment elles sont codées, faut regarder...
