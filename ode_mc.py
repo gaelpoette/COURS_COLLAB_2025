@@ -27,6 +27,7 @@ list_type = params["list_type"]
 sig_r_0 = params["sig_r_0"]
 sig_r_1 = params["sig_r_1"]
 sig_r_2 = params["sig_r_2"]
+eta = params["eta"]
 list_sigr = {0 : sig_r_0, 1 : sig_r_1, 2 : sig_r_2}
 temps=[]
 
@@ -53,7 +54,7 @@ compos=[]
 for i in range(len(list_reac)): 
   compos_reac=(list_reac[i].split(' '))
   print(compos_reac)
-  for j in range(len(compos_reac)-1):
+  for j in range(len(compos_reac)):
     if compos_reac[1] == "=":
         del compos_reac[1] 
         list_type.append("unaire")

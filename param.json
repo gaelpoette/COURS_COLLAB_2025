@@ -21,7 +21,11 @@
     "6" : "constantes des réactions",
     "sig_r_0" : 1.0,
     "sig_r_1" : 2.0,
-    "sig_r_2" : 0.5
+    "sig_r_2" : 0.5,
+
+    "7" : "liste des concentrations initiales (en float)",
+    "eta" : {"e^-":10.0, "Ar":10.0 ,"B":0.0 ,"C": 0.0 , "K": 0.0, "L": 0.0}
+
 
 
 
