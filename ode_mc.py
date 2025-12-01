@@ -48,11 +48,13 @@ if (not(len(list_reac)==len(list_sigr))):
   exit(1)
 
 # lecture de la liste des compositions des réactions
+print("travail sur list_type")
 list_type=[]
 compos=[]
+print(list_reac)
 for i in range(len(list_reac)): 
   compos_reac=(list_reac[i].split(' '))
-  print(compos_reac)
+  #print(compos_reac)
   for j in range(len(compos_reac)-1):
     if compos_reac[1] == "=":
         del compos_reac[1] 
@@ -62,7 +64,7 @@ for i in range(len(list_reac)):
         list_type.append("binaire")
     if not(compos_reac[j] in compos):
        compos.append(compos_reac[j])
-       print(compos)
+       #print(compos)
 print("liste des especes")
 print(compos)
 
@@ -82,7 +84,7 @@ for i in range(len(list_reac)):
     print("\n num de reaction = "+str(i)+"")
     reac = list_reac[i]
     compos_reac = (reac.split(' '))
-    print(compos_reac)
+    print(reac, compos_reac)
     # recuperation du vecteur des reactifs
     print("type de reaction: "+list_type[i]+"")
 
