@@ -67,12 +67,13 @@ print("liste des especes")
 print(compos)
 
 #"conditions initiales en eta codée en dur pour l'instant
-eta={}
-for c in compos:
-    eta[c]=0.
-    if c=="Ar" or c=="e^-":
-      eta[c] = 1. * vol
-	
+if len(eta) != len(compos) :
+    print("Erreur de taille dans la liste des concentrations")
+    eta={}
+    for c in compos:
+        print("Choisir la concentration initiale de ",c, ':')
+        eta[c]=float(input( ))
+
 print("conditions initiales des espèces")
 print(eta)
 
