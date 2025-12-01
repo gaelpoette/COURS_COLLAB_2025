@@ -14,6 +14,24 @@ random.seed(42)
 # importation des paramètres
 import json
 
+
+
+# ============================================================
+# 3. Initialisation de la population PMC
+# ============================================================
+
+def init_PMC(Nmc, compos, eta):
+    PMC = []
+    for _ in range(Nmc):
+        w = 1.0 / Nmc
+        PMC.append({
+            "weight": w,
+            "densities": {c: eta[c] for c in compos}
+        })
+    return PMC
+
+
+
 with open("param.json", "r") as f:
     params = json.load(f)
 
@@ -121,14 +139,7 @@ print(h)
 print("les coefficients stoechiométriques (nu) pour chaque reaction")
 print(nu)
 # population de particules représentant la condition initiale
-PMC=[]
-for nmc in range(Nmc):
-    w=1. / Nmc
-    eta_nmc={}
-    for c in compos:
-        eta_nmc[c] = eta[c]
-    pmc = {"weight" : w, "densities" : eta_nmc}
-    PMC.append(pmc)
+PMC = init_PMC(Nmc, compos, eta)
 
 #entete du fichier
 cmd="\n"+"#temps"+" "
