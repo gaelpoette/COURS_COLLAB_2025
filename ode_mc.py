@@ -27,6 +27,7 @@ list_type = params["list_type"]
 sig_r_0 = params["sig_r_0"]
 sig_r_1 = params["sig_r_1"]
 sig_r_2 = params["sig_r_2"]
+eta = params["eta"]
 list_sigr = {0 : sig_r_0, 1 : sig_r_1, 2 : sig_r_2}
 temps=[]
 
@@ -67,7 +68,7 @@ print("liste des especes")
 print(compos)
 
 #"conditions initiales en eta codée en dur pour l'instant
-if len(eta) != len(compos) :
+if  eta == {} :
     print("Erreur de taille dans la liste des concentrations")
     eta={}
     for c in compos:
