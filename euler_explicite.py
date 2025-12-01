@@ -9,7 +9,7 @@ sigma = 1
 vol = 10.
 # PARAM: construction de la liste des temps d'intérêt
 temps_final = 30
-dt=1
+dt=0.1
 Nt = int(temps_final/dt)
 t=[]
 t0=0.
@@ -17,7 +17,7 @@ for it in range(Nt):
     t.append(t0)
     t0+=dt
 
-#réaction : "e^-+ A+ B -> K + L"
+#réaction : "e^-+ A+ B -> K + Z"
 
 #initialisation de la concentration
 c_e =  np.zeros(len(t))
