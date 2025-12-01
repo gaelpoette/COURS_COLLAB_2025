@@ -5,10 +5,41 @@ from math import *
 from string import *
 import os
 import random
+import matplotlib.pyplot as plt
+
+
+random.seed(42)
 
 
 # importation des paramètres
-from param import *
+import json
+
+with open("param.json", "r") as f:
+    params = json.load(f)
+
+Nmc = params["Nmc"]
+vol = params["vol"]
+temps_final = params["temps_final"]
+dt = params["dt"]
+t = params["t"]
+list_reac = params["list_reac"]
+list_type = params["list_type"]
+sig_r_0 = params["sig_r_0"]
+sig_r_1 = params["sig_r_1"]
+sig_r_2 = params["sig_r_2"]
+list_sigr = {0 : sig_r_0, 1 : sig_r_1, 2 : sig_r_2}
+temps=[]
+
+for i, s in list_sigr.items():
+    if s < 0:
+        print(f"ERREUR : constante de réaction négative pour la réaction {i} : {s}")
+        exit(10)
+
+Nt = int(temps_final/dt)
+
+for it in range(Nt):
+    temps.append(t)
+    t+=dt
 
 print("liste des reactions")
 print(list_reac)
@@ -17,13 +48,21 @@ if (not(len(list_reac)==len(list_sigr))):
   exit(1)
 
 # lecture de la liste des compositions des réactions
+list_type=[]
 compos=[]
 for i in range(len(list_reac)): 
   compos_reac=(list_reac[i].split(' '))
-  for j in range(len(compos_reac)):
-     if not(compos_reac[j] in compos):
+  print(compos_reac)
+  for j in range(len(compos_reac)-1):
+    if compos_reac[1] == "=":
+        del compos_reac[1] 
+        list_type.append("unaire")
+    if compos_reac[2] == "=":
+        del compos_reac[2] 
+        list_type.append("binaire")
+    if not(compos_reac[j] in compos):
        compos.append(compos_reac[j])
-
+       print(compos)
 print("liste des especes")
 print(compos)
 
@@ -180,18 +219,72 @@ output = open("rez.txt",'w')
 output.write(cmd)
 output.close()
 
-cmd_gnu="set sty da l;set grid; set xl 'time'; set yl 'densities of the species'; plot "
-i=3
-cmd_gnu+="'rez.txt' lt 1 w lp  t '"+str(compos[0])+"'"
+#ancienne version 
+
+
+#----------------
+
+# cmd_gnu="set sty da l;set grid; set xl 'time'; set yl 'densities of the species'; plot "
+# i=3
+# cmd_gnu+="'rez.txt' lt 1 w lp  t '"+str(compos[0])+"'"
+# for c in compos:
+#    if not(c==compos[0]):
+#      cmd_gnu+=",'' u 1:"+str(i)+" lt "+str(i)+" w lp t '"+str(compos[i-2])+"'"
+#      i+=1
+
+# cmd_gnu+=";pause -1"
+# output = open("gnu.plot",'w')
+# output.write(cmd_gnu)
+# output.close()
+
+# os.system("gnuplot gnu.plot")
+
+
+#----------------------
+
+# nouvelle visualisation avec matplotlib
+
+#-------------------
+
+
+# On lit les résultats depuis rez.txt
+times = []
+densities = {c: [] for c in compos}
+
+with open("rez.txt", "r") as f:
+    for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue  # on saute les lignes de commentaires et les lignes vides
+
+        parts = line.split()
+        t = float(parts[0])
+        times.append(t)
+
+        # les densites sont ensuite dans le meme ordre que la liste 'compos'
+        for i, c in enumerate(compos):
+            densities[c].append(float(parts[i + 1]))
+
+# matplotlib
+plt.figure(figsize=(10, 6))
 for c in compos:
-   if not(c==compos[0]):
-     cmd_gnu+=",'' u 1:"+str(i)+" lt "+str(i)+" w lp t '"+str(compos[i-2])+"'"
-     i+=1
+    plt.plot(times, densities[c], label=c)
 
-cmd_gnu+=";pause -1"
-output = open("gnu.plot",'w')
-output.write(cmd_gnu)
-output.close()
+plt.xlabel("time")
+plt.ylabel("densities of the species")
+plt.title("evolution des densites (methode MC)")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
 
-os.system("gnuplot gnu.plot")
+# sauvegarder 
+plt.savefig("densites_matplotlib.png", dpi=150)
+print("figure sauvée dans 'densites_matplotlib.png'")
+
+plt.show() # affichage en local
+
+#----------------------------------
+
+
+
 
